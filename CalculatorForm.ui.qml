@@ -85,8 +85,9 @@ Item {
 
                 highlighted: true
                 Material.accent: Material.BlueGrey
-                id: buttonAC
-                text: qsTr("AC")
+                id: buttonPow
+                text: qsTr("^")
+                onClicked: textField.text += buttonPow.text
             }
 
             Button {

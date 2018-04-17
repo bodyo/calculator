@@ -2,6 +2,11 @@
 
 #include <QDebug>
 
+ShuntingYard::ShuntingYard(QObject *parent)
+    :QObject(parent)
+{
+}
+
 std::vector<Token> ShuntingYard::getReversePolishNotation(const QStringList &inputString) const
 {
     qDebug() << inputString;
@@ -23,10 +28,13 @@ std::vector<Token> ShuntingYard::getReversePolishNotation(const QStringList &inp
     for (auto riter = operatorStack.rbegin(); riter != operatorStack.rend(); riter++)
         outputStack.push_back(*riter);
 
+    for (auto tok : outputStack)
+        qDebug() << tok.m_data;
+
     return outputStack;
 }
 
-double ShuntingYard::calculate(const std::vector<Token> &reversePolishNotation) const
+double ShuntingYard::calculateReversePolishNotation(const std::vector<Token> &reversePolishNotation) const
 {
     std::stack<double> resultStack;
 
@@ -61,22 +69,18 @@ double ShuntingYard::calculate(const std::vector<Token> &reversePolishNotation) 
     return resultStack.top();
 }
 
-ShuntingYard::ShuntingYard(QObject *parent)
-    :QObject(parent)
-{
-}
-
-double ShuntingYard::calculateInputString() const
+double ShuntingYard::calculate() const
 {
     if (calculated)
         return cache;
     else
     {
         auto inputString = m_inputString.simplified();
+        inputString.replace(" ", "");
 
-        auto reversePolishNotation = getReversePolishNotation(inputString.split(" "));
-
-        cache = calculate(reversePolishNotation);
+        auto reversePolishNotation = getReversePolishNotation(parseInputString(inputString));
+        cache = calculateReversePolishNotation(reversePolishNotation);
+        calculated = true;
 
         return cache;
     }
@@ -152,5 +156,31 @@ void ShuntingYard::setInputString(const QString &inputString)
         return;
     calculated = false;
     m_inputString = inputString;
+}
+
+QStringList ShuntingYard::parseInputString(const QString &inputString) const
+{
+    QStringList parsedString;
+    for (auto rIter = inputString.begin(); rIter != inputString.end(); rIter++)
+    {
+        QString token;
+        while (rIter->isDigit() || (*rIter == '.'))
+        {
+            token.push_back(*rIter);
+            auto nextIt = rIter+1;
+            if ((nextIt->isDigit() || (*nextIt == '.')) && (nextIt != inputString.end()))
+                rIter++;
+            else
+                break;
+        }
+
+        if (Token::isOperator(*rIter) && (rIter != inputString.end()))
+            token.push_back(*rIter);
+
+        parsedString.push_back(token);
+    }
+
+    qDebug() << parsedString;
+    return parsedString;
 }
 
