@@ -7,29 +7,16 @@ ShuntingYard::ShuntingYard(QObject *parent)
 {
 }
 
-std::vector<Token> ShuntingYard::getReversePolishNotation(const QStringList &inputString) const
+std::vector<Token> ShuntingYard::getReversePolishNotation(const std::vector<Token> &inputTokens) const
 {
-    qDebug() << inputString;
     std::vector<Token> outputStack;
     std::vector<Token> operatorStack;
 
-    for (auto cData : inputString)
-    {
-        Token token;
-
-        if (Token::isOperator(cData))
-            token = Token::defineOperatorType(cData);
-        else if (checkIsNumber(cData))
-            token = {cData.toDouble(), false, Token::TokenType::Number};
-
+    for (auto token : inputTokens)
         parseToken(outputStack, operatorStack, token);
-    }
 
     for (auto riter = operatorStack.rbegin(); riter != operatorStack.rend(); riter++)
         outputStack.push_back(*riter);
-
-    for (auto tok : outputStack)
-        qDebug() << tok.m_data;
 
     return outputStack;
 }
@@ -66,6 +53,9 @@ double ShuntingYard::calculateReversePolishNotation(const std::vector<Token> &re
         }
     }
 
+    if (resultStack.empty())
+        return 0;
+
     return resultStack.top();
 }
 
@@ -84,13 +74,6 @@ double ShuntingYard::calculate() const
 
         return cache;
     }
-}
-
-bool ShuntingYard::checkIsNumber(const QString &cData) const
-{
-    bool isOk = false;
-    cData.toDouble(&isOk);
-    return isOk;
 }
 
 void ShuntingYard::parseToken(std::vector<Token> &outputStack, std::vector<Token> &operatorStack, const Token token) const
@@ -158,29 +141,36 @@ void ShuntingYard::setInputString(const QString &inputString)
     m_inputString = inputString;
 }
 
-QStringList ShuntingYard::parseInputString(const QString &inputString) const
+std::vector<Token> ShuntingYard::parseInputString(const QString &inputString) const
 {
-    QStringList parsedString;
-    for (auto rIter = inputString.begin(); rIter != inputString.end(); rIter++)
+    std::vector<Token> parsedTokens;
+    for (auto iter = inputString.begin(); iter != inputString.end(); iter++)
     {
-        QString token;
-        while (rIter->isDigit() || (*rIter == '.'))
+        QString string;
+        Token token;
+        while (iter->isDigit() || (*iter == '.'))
         {
-            token.push_back(*rIter);
-            auto nextIt = rIter+1;
+            string.push_back(*iter);
+            auto nextIt = iter+1;
             if ((nextIt->isDigit() || (*nextIt == '.')) && (nextIt != inputString.end()))
-                rIter++;
+                iter++;
             else
+            {
+                token = {string.toDouble(), false, Token::TokenType::Number};
                 break;
+            }
         }
 
-        if (Token::isOperator(*rIter) && (rIter != inputString.end()))
-            token.push_back(*rIter);
+        if (token.m_tType != Token::TokenType::Number)
+        {
+            token = Token::defineOperatorType(*iter);
+            if (token.m_tType == Token::TokenType::None)
+                return {}; // replace to exception in future
+        }
 
-        parsedString.push_back(token);
+        parsedTokens.push_back(token);
     }
 
-    qDebug() << parsedString;
-    return parsedString;
+    return parsedTokens;
 }
 

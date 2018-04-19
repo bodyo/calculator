@@ -1,4 +1,4 @@
-import QtQuick 2.4
+import QtQuick 2.7
 
 CalculatorForm {
     anchors.fill: parent
@@ -7,5 +7,8 @@ CalculatorForm {
     buttonCalc.onClicked: {
         mathEngine.setInputString(textField.text);
         textField.text = mathEngine.calculate();
+    }
+    Keys.onPressed: {
+//                buttonCalc.clicked()
     }
 }

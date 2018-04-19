@@ -30,14 +30,14 @@ struct Token
     StackEvent sEvent;
     double (*action)(double val1, double val2){nullptr};
 
-    static bool isOperator(const QString &tok);
-    static Token defineOperatorType(const QString &tok);
+    static Token defineOperatorType(const QChar &tok);
 
 private:
     static double add(double val1, double val2);
     static double subtract(double val1, double val2);
     static double divide(double val1, double val2);
     static double multiply(double val1, double val2);
+    static double remOfDiv(double val1, double val2);
     static double power(double val, double pow);
 };
 

@@ -18,10 +18,10 @@ public:
     Q_INVOKABLE void setInputString(const QString &inputString);
 
 private:
-    QStringList parseInputString(const QString& inputString) const;
+    std::vector<Token> parseInputString(const QString& inputString) const;
     double calculateReversePolishNotation(const std::vector<Token> &reversePolishNotation) const;
-    std::vector<Token> getReversePolishNotation(const QStringList &inputString) const;
-    bool checkIsNumber(const QString &cData) const;
+    std::vector<Token> getReversePolishNotation(const std::vector<Token> &inputTokens) const;
+
     void parseToken(std::vector<Token> &outputStack, std::vector<Token> &operatorStack, const Token token) const;
 
 private:
