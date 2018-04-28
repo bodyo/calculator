@@ -63,17 +63,17 @@ double ShuntingYard::calculate() const
 {
     if (calculated)
         return cache;
-    else
-    {
-        auto inputString = m_inputString.simplified();
-        inputString.replace(" ", "");
 
-        auto reversePolishNotation = getReversePolishNotation(parseInputString(inputString));
-        cache = calculateReversePolishNotation(reversePolishNotation);
-        calculated = true;
+    auto inputString = m_inputString.simplified();
+    inputString.replace(" ", "");
 
-        return cache;
-    }
+    auto parsedTokens = parseInputString(inputString);
+    detectUnaryOperations(parsedTokens);
+    auto reversePolishNotation = getReversePolishNotation(parsedTokens);
+    cache = calculateReversePolishNotation(reversePolishNotation);
+    calculated = true;
+
+    return cache;
 }
 
 void ShuntingYard::parseToken(std::vector<Token> &outputStack, std::vector<Token> &operatorStack, const Token token) const
@@ -133,6 +133,51 @@ void ShuntingYard::parseToken(std::vector<Token> &outputStack, std::vector<Token
     }
 }
 
+void ShuntingYard::detectUnaryOperations(std::vector<Token> &parsedTokens) const
+{
+    for (auto iter = parsedTokens.begin(); iter != parsedTokens.end(); ++iter)
+    {
+        if (iter+1 == parsedTokens.end())
+            break;
+
+        if (iter->m_tType == Token::TokenType::Operator && iter->m_data.toChar() == "-")
+        {
+            if (iter == parsedTokens.begin())
+            {
+                if ((iter+1)->m_tType == Token::TokenType::Number)
+                {
+                    iter->m_association = true;
+                    auto data = -(iter+1)->m_data.toDouble();
+                    (iter+1)->m_data = data;
+                }
+            }
+        }
+        if (iter + 2 == parsedTokens.end())
+            break;
+
+        if (iter->m_tType == Token::TokenType::Operator &&
+                (iter+1)->m_tType == Token::TokenType::Operator &&
+                (iter+2)->m_tType == Token::TokenType::Number)
+        {
+            if ((iter+1)->m_data.toChar() == "-")
+            {
+                (iter+1)->m_association = true;
+                auto data = -(iter+2)->m_data.toDouble();
+                (iter+2)->m_data = data;
+            }
+            else if ((iter+1)->m_data.toChar() == "+")
+                (iter+1)->m_association = true;
+        }
+
+    }
+    parsedTokens.erase(std::remove_if(parsedTokens.begin(), parsedTokens.end(), [](const Token &tok){
+        return tok.m_association;
+    }), parsedTokens.end());
+
+    for (auto tok : parsedTokens)
+        qDebug() << tok.m_data;
+}
+
 void ShuntingYard::setInputString(const QString &inputString)
 {
     if (m_inputString == inputString)
@@ -144,7 +189,7 @@ void ShuntingYard::setInputString(const QString &inputString)
 std::vector<Token> ShuntingYard::parseInputString(const QString &inputString) const
 {
     std::vector<Token> parsedTokens;
-    for (auto iter = inputString.begin(); iter != inputString.end(); iter++)
+    for (auto iter = inputString.begin(); iter != inputString.end(); ++iter)
     {
         QString string;
         Token token;

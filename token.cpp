@@ -67,7 +67,6 @@ Token Token::defineOperatorType(const QChar &tok)
         token.sEvent = StackEvent::PushIn;
         token.priority = 3;
         token.action = &Token::power;
-        token.m_association = true;
         return token;
     }
     default:

@@ -23,6 +23,7 @@ private:
     std::vector<Token> getReversePolishNotation(const std::vector<Token> &inputTokens) const;
 
     void parseToken(std::vector<Token> &outputStack, std::vector<Token> &operatorStack, const Token token) const;
+    void detectUnaryOperations(std::vector<Token> &parsedTokens) const;
 
 private:
     mutable bool calculated;
