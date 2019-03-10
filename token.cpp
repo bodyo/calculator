@@ -2,6 +2,8 @@
 
 #include <QDebug>
 
+#include <cmath>
+
 Token::Token(const QVariant& data, bool association, const TokenType &tType)
     :m_data(data), m_association(association), m_tType(tType)
 {

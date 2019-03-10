@@ -59,8 +59,10 @@ double ShuntingYard::calculateReversePolishNotation(const std::vector<Token> &re
     return resultStack.top();
 }
 
-double ShuntingYard::calculate() const
+double ShuntingYard::calculate(const QString &basicInputString)
 {
+    setInputString(basicInputString);
+    
     if (calculated)
         return cache;
 
@@ -173,9 +175,6 @@ void ShuntingYard::detectUnaryOperations(std::vector<Token> &parsedTokens) const
     parsedTokens.erase(std::remove_if(parsedTokens.begin(), parsedTokens.end(), [](const Token &tok){
         return tok.m_association;
     }), parsedTokens.end());
-
-    for (auto tok : parsedTokens)
-        qDebug() << tok.m_data;
 }
 
 void ShuntingYard::setInputString(const QString &inputString)
@@ -218,4 +217,3 @@ std::vector<Token> ShuntingYard::parseInputString(const QString &inputString) co
 
     return parsedTokens;
 }
-

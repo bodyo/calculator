@@ -14,10 +14,10 @@ class ShuntingYard : public QObject
 public:
     explicit ShuntingYard(QObject *parent = nullptr);
 
-    Q_INVOKABLE double calculate() const;
-    Q_INVOKABLE void setInputString(const QString &inputString);
+    Q_INVOKABLE double calculate(const QString &basicInputString);
 
 private:
+    void setInputString(const QString &inputString);
     std::vector<Token> parseInputString(const QString& inputString) const;
     double calculateReversePolishNotation(const std::vector<Token> &reversePolishNotation) const;
     std::vector<Token> getReversePolishNotation(const std::vector<Token> &inputTokens) const;

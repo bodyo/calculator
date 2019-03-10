@@ -5,8 +5,7 @@ CalculatorForm {
 
     textField.focus: true
     buttonCalc.onClicked: {
-        mathEngine.setInputString(textField.text);
-        textField.text = mathEngine.calculate();
+        textField.text = mathEngine.calculate(textField.text);
     }
     Keys.onPressed: {
 //                buttonCalc.clicked()
