@@ -17,4 +17,4 @@ script:
   - make
   - cd tests
   - qmake tests.pro
-  - make
+  - make && ./tests
