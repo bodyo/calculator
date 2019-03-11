@@ -8,10 +8,13 @@ before_install:
   - sudo apt-get update
 
 install:
-  - sudo apt-get install qt58-meta-dbg-full
+  - sudo apt-get install qt58base qt58xmlpatterns qt58quickcontrols2
   - source /opt/qt58/bin/qt58-env.sh
 
 
 script:
   - qmake calculator.pro
+  - make
+  - cd tests
+  - qmake tests.pro
   - make
