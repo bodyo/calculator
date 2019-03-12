@@ -18,4 +18,5 @@ script:
   - cd tests
   - qmake tests.pro
   - make
+  - cd ../
   - ls
